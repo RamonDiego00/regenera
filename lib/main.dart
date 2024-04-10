@@ -1,7 +1,35 @@
-import 'package:flutter/material.dart';
+import 'dart:io';
 
-void main() {
-  runApp(const MyApp());
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:provider/provider.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:regenera/core/repository/AnnouncementRepository.dart';
+import 'package:regenera/ui/components/bottombar/NavigationBarMain.dart';
+import 'package:regenera/ui/screens/main/HomeScreen.dart';
+import 'package:regenera/ui/screens/main/LoginScreen.dart';
+import 'package:regenera/viewmodel/AnnouncementViewModel.dart';
+import 'firebase_options.dart';
+import 'navigation/router.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  // sqfliteFfiInit();
+
+  runApp(MultiProvider(
+    providers: [
+      ChangeNotifierProvider(create: (context) => AnnouncementRepository()),
+      ChangeNotifierProvider(
+          create: (context) => AnnouncementViewModel(AnnouncementRepository()))
+    ],
+    child: MyApp(),
+  ));
 }
 
 class MyApp extends StatelessWidget {
@@ -9,82 +37,71 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
+    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+      systemNavigationBarDividerColor: Colors.white,
+      systemNavigationBarColor: Colors.white,
+    ));
+    return StreamBuilder<User?>(
+      stream: FirebaseAuth.instance.authStateChanges(),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          return MaterialApp(
+            theme: ThemeData(
+              textTheme: const TextTheme(
+                headlineLarge: TextStyle(
+                  fontSize: 24.0,
+                  fontWeight: FontWeight.bold,
+                ),
+                titleLarge: TextStyle(
+                  fontSize: 26.0,
+                  fontWeight: FontWeight.bold,
+                ),
+                bodyMedium: TextStyle(
+                  fontSize: 14.0,
+                ),
+              ),
+              useMaterial3: true,
+              primaryColor: Colors.white,
+              colorScheme: ColorScheme.fromSeed(
+                  seedColor: Colors.white,
+                  background: Colors.white,
+                  brightness: Brightness.dark,
+                  primary: Colors.white),
             ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
+            home: NavigationBarMain(),
+            onGenerateRoute: router.generator,
+          );
+        } else {
+          // User is not logged in, show LoginPage
+          return MaterialApp(
+            theme: ThemeData(
+              bottomAppBarTheme: BottomAppBarTheme(color: Colors.black54),
+              textTheme: const TextTheme(
+                headlineLarge: TextStyle(
+                  fontSize: 24.0,
+                  fontWeight: FontWeight.bold,
+                ),
+                titleLarge: TextStyle(
+                  fontSize: 26.0,
+                  fontWeight: FontWeight.bold,
+                ),
+                bodyMedium: TextStyle(
+                  fontSize: 14.0,
+                ),
+              ),
+              useMaterial3: true,
+              primaryColor: Colors.black,
+              colorScheme: ColorScheme.fromSeed(
+                  seedColor: Colors.white,
+                  background: Colors.white,
+                  brightness: Brightness.light,
+                  primary: Colors.white),
             ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+            home: HomeScreen(),
+            onGenerateRoute: router.generator,
+          );
+        }
+      },
     );
   }
 }
