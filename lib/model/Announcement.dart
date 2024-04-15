@@ -2,7 +2,7 @@ class Announcement {
   final String id;
   final String surplusId;
   final String dealing;
-  final String negotiated;
+  final bool negotiated;
 
   Announcement(
       {required this.id,

@@ -129,6 +129,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       Align(
                         alignment: Alignment.center,
                         child: Card(
+                          surfaceTintColor: Colors.white,
                           color: Colors.white,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(16.0),

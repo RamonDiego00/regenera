@@ -1,12 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:regenera/core/repository/SurplusRepository.dart';
+import 'package:regenera/core/repository/UserRepository.dart';
+import 'package:regenera/ui/screens/main/ArticlesScreen.dart';
+import 'package:regenera/ui/screens/main/FavoriteScreen.dart';
 import 'package:regenera/ui/screens/main/HomeScreen.dart';
 import 'package:regenera/ui/screens/main/LoginScreen.dart';
 
+import '../../../core/repository/AnnouncementRepository.dart';
 import '../../../utils/bottomSheet/createAnnouncement.dart';
 import '../../../utils/bottomSheet/handleCreateBottomSheet.dart';
 import '../../../utils/bottomSheet/createArticle.dart';
 import '../../../utils/bottomSheet/createSurplus.dart';
+import '../../../viewmodel/AnnouncementViewModel.dart';
+import '../../../viewmodel/ArticleViewModel.dart';
+import '../../../viewmodel/SurplusViewModel.dart';
+import '../../screens/main/MessageScreen.dart';
 
 class NavigationBarMain extends StatefulWidget {
   @override
@@ -14,21 +23,47 @@ class NavigationBarMain extends StatefulWidget {
 }
 
 class _NavigationBarMainState extends State<NavigationBarMain> {
+  late SurplusRepository surplusRepository;
+  late SurplusViewModel surplusViewModel;
+
+  late UserRepository articleRepository;
+  late ArticleViewModel articleViewModel;
+
+ late AnnouncementRepository announcementRepository;
+  late AnnouncementViewModel announcementViewModel;
+
+  @override
+  void initState() {
+    super.initState();
+    surplusRepository = SurplusRepository();
+    surplusViewModel = SurplusViewModel(surplusRepository);
+
+    articleRepository = UserRepository();
+    articleViewModel = ArticleViewModel(articleRepository);
+
+    announcementRepository = AnnouncementRepository();
+    announcementViewModel = AnnouncementViewModel(announcementRepository);
+  }
+
+
+
   int _selectedIndex = 0;
 
   final List<Widget> _pages = [
     const HomeScreen(),
+    const FavoriteScreen(),
+    // deve ser vazio
     const HomeScreen(),
-    const HomeScreen(),
-    const HomeScreen(),
-    const LoginPage(),
+    // esse homeScreen nã deve existir
+    const MessageScreen(),
+    const ArticlesScreen(),
   ];
 
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
       if (index == 2) {
-        Handle().handleCreateSurplus(context);
+        Handle().handleCreateSurplus(context, surplusViewModel,articleViewModel,announcementViewModel);
       }
     });
   }

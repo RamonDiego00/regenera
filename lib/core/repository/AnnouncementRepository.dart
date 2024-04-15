@@ -4,18 +4,23 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:regenera/model/Announcement.dart';
 
+import '../../model/Surplus.dart';
+import '../../services/authenticationService.dart';
 
 class AnnouncementRepository extends ChangeNotifier {
   // late Database db;
   late FirebaseFirestore cloud;
+  final authenticationService = AuthenticationService();
+  late String user_id;
 
-  NoteRepository() {
+  AnnouncementRepository() {
     _initRepository();
   }
 
   _initRepository() async {
     // db = await DB.instance.database;
     cloud = FirebaseFirestore.instance;
+    user_id = authenticationService.getCurrentUuser_id();
   }
 
   Future<void> initialize() async {
@@ -23,26 +28,56 @@ class AnnouncementRepository extends ChangeNotifier {
     cloud = FirebaseFirestore.instance;
   }
 
-  Future<void> saveNote(Announcement note) async {
+  Future<List<Announcement>> getAllAnnouncements() async {
     try {
-      // await db.insert('notes', note.toMap());
-      notifyListeners();
+      final collectionReference = cloud.collection("Anuncio");
+      final querySnapshot = await collectionReference.get();
 
-      // depois de um tempinho é melhor deletar ela para
-      // limpar os dados do celular e deixar em nuvem
+      final announcements = <Announcement>[];
+      for (final documentSnapshot in querySnapshot.docs) {
+        final Map<String, dynamic> data = documentSnapshot.data() as Map<String, dynamic>;
+        final announcement = Announcement.fromMap(data);
+        announcements.add(announcement);
+      }
+
+      return announcements;
     } catch (e) {
-      // Trate qualquer erro de inserção aqui
-      print('Erro ao salvar nota: $e');
+      print('Erro ao recuperar notas: $e');
+      return [];
     }
+  }
 
-    try{
-      // passar o id do documento que já existe ele vai atualizar no firestore
-    cloud.collection("Notes").doc(note.id).set(note.toMap()) ;
+  Future<List<Surplus>> getMyAllSurplusByCategory(String category) async {
+    try {
+      final collectionReference = cloud.collection("Exedente");
+      final querySnapshot = await collectionReference
+          .where('category', isEqualTo: category)
+          .where('createdBy', isEqualTo: user_id)
+          .get();
 
-    } catch(e){
+      final announcements = <Surplus>[];
+      for (final documentSnapshot in querySnapshot.docs) {
+        final Map<String, dynamic> data = documentSnapshot.data() as Map<String, dynamic>;
+        final surplus = Surplus.fromMap(data);
+        announcements.add(surplus);
+      }
+
+      return announcements;
+    } catch (e) {
+      print('Erro ao recuperar exedentes: $e');
+      return [];
+    }
+  }
+
+  Future<void> saveAnnouncement(Announcement announcement) async {
+    try {
+      cloud
+          .collection("Anuncio")
+          .doc(announcement.id)
+          .set(announcement.toMap());
+    } catch (e) {
       print("Erro ao salvar em nuvem: $e");
     }
-
   }
 
   Future<void> deleteNote(Announcement note) async {
@@ -53,6 +88,26 @@ class AnnouncementRepository extends ChangeNotifier {
       print('Erro ao excluir nota: $e');
     }
   }
+
+  Future<void> deleteAnnouncementById(String announcementId) async {
+    final documentReference = cloud.collection("Anuncio").doc(announcementId);
+    await documentReference.delete();
+  }
+
+  Future<Announcement?> getAnnouncementById(String announcementId) async {
+    final documentReference = cloud.collection("Anuncio").doc(announcementId);
+    final documentSnapshot = await documentReference.get();
+
+    if (documentSnapshot.exists) {
+      final Map<String, dynamic> data = documentSnapshot.data() as Map<String, dynamic>;
+      final announcement = Announcement.fromMap(data);
+      return announcement;
+    } else {
+      return null; // Handle the case where the document doesn't exist
+    }
+  }
+
+
   Future<void> deleteAllNotes() async {
     try {
       // await db.delete('notes');
@@ -69,35 +124,4 @@ class AnnouncementRepository extends ChangeNotifier {
       print('Erro ao atualizar nota: $e');
     }
   }
-
-
-  Future<List<Announcement>> getAllNotes() async {
-    try {
-      // final List<Map<String, dynamic>> noteMaps = await db.query('notes');
-      final List<Announcement> notes = [];
-
-      // for (var noteMap in noteMaps) {
-
-
-        // final Announcement note = Announcement(
-        //   user_id: noteMap['user_id'] ,
-        //   id: noteMap['id'],
-        //   title: noteMap['title'],
-        //   message: noteMap['message'],
-        //   category: noteMap['category'],
-        // );
-
-        // notes.add(note);
-      // }
-
-      return notes;
-    } catch (e) {
-      print('Erro ao recuperar notas: $e');
-      return [];
-    }
-  }
-
-
-
-
 }

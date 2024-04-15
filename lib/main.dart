@@ -22,7 +22,8 @@ void main() async {
   );
   // sqfliteFfiInit();
 
-  runApp(MultiProvider(
+  runApp(
+      MultiProvider(
     providers: [
       ChangeNotifierProvider(create: (context) => AnnouncementRepository()),
       ChangeNotifierProvider(
@@ -47,6 +48,7 @@ class MyApp extends StatelessWidget {
         if (snapshot.hasData) {
           return MaterialApp(
             theme: ThemeData(
+              bottomSheetTheme:  BottomSheetThemeData(backgroundColor: Colors.white),
               textTheme: const TextTheme(
                 headlineLarge: TextStyle(
                   fontSize: 24.0,
@@ -75,6 +77,7 @@ class MyApp extends StatelessWidget {
           // User is not logged in, show LoginPage
           return MaterialApp(
             theme: ThemeData(
+              bottomSheetTheme:  BottomSheetThemeData(backgroundColor: Colors.white),
               bottomAppBarTheme: BottomAppBarTheme(color: Colors.black54),
               textTheme: const TextTheme(
                 headlineLarge: TextStyle(

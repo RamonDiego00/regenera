@@ -1,7 +1,10 @@
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:regenera/core/repository/AnnouncementRepository.dart';
 import 'package:regenera/model/Announcement.dart';
 import 'package:regenera/viewmodel/AnnouncementViewModel.dart';
+
+import '../../model/Surplus.dart';
 
 class AnnouncementItem extends StatefulWidget {
   final Announcement announcement;
@@ -15,72 +18,108 @@ class AnnouncementItem extends StatefulWidget {
 class _AnnouncementItemState extends State<AnnouncementItem> {
   late AnnouncementRepository announcementRepository;
   late AnnouncementViewModel announcementViewModel;
-  bool _isExpanded = false;
+  late Future<Surplus> surplus;
 
   @override
   void initState() {
     super.initState();
     announcementRepository = AnnouncementRepository();
     announcementViewModel = AnnouncementViewModel(announcementRepository);
+
+    surplus =
+        announcementViewModel.getSurplusById(widget.announcement.surplusId);
   }
 
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: Color.fromRGBO(57, 57, 57, 1),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10),
-        side: BorderSide(
-          color: Colors.white54, // Altere a cor aqui
-          width: 2,
-        ),
-      ),
       elevation: 4,
-      // Ajusta a elevação do card
       margin: EdgeInsets.all(8),
-      // Margem ao redor do card
       child: InkWell(
-        onTap: () {
-          setState(() {
-            _isExpanded = !_isExpanded;
-          });
-        },
+        onTap: () {},
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
+              // Image carousel with heart icon
+              Stack(
+                alignment: Alignment.topRight,
                 children: [
-                  SizedBox(width: 10),
-                  Expanded(
-                    child: Text(
-                      widget.announcement.negotiated,
-                      style: Theme.of(context).textTheme.titleLarge
+                  CarouselSlider.builder(
+                    itemCount: 2, //length image,
+                    itemBuilder: (context, index, carouselController) {
+                      final imageURL = ["images"][index];
+                      return Image.network(
+                        imageURL,
+                        fit: BoxFit.cover,
+                        width: double.infinity,
+                        height: 200, // Adjust carousel height as needed
+                      );
+                    },
+                    options: CarouselOptions(
+                      viewportFraction: 0.8,
+                      // Adjust carousel viewport size
+                      initialPage: 0,
+                      enableInfiniteScroll: true,
+                      autoPlay: true,
+                      autoPlayInterval: Duration(seconds: 5),
+                      autoPlayCurve: Curves.fastOutSlowIn,
+                      pauseAutoPlayOnTouch: false,
                     ),
                   ),
-                  if (_isExpanded)
-                    GestureDetector(
-                      onTap: () {
-                        announcementRepository.deleteNote(widget.announcement);
-                      },
+                  GestureDetector(
+                    onTap: () {
+                      // Handle heart icon tap (e.g., toggle favorite status)
+                    },
+                    child: Padding(
+                      padding: EdgeInsets.all(10),
                       child: Icon(
-                        Icons.delete,
-                        size: 20,
+                        Icons.favorite,
+                        color: Colors.white,
+                        size: 24,
                       ),
                     ),
-                  SizedBox(width: 10),
+                  ),
                 ],
               ),
-              if (_isExpanded)
-                Wrap(
-                  children: [
-                    Text(
-                      widget.announcement.dealing,
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    )
-                  ],
-                )
+
+              // Row with evaluation and location text
+              Column(children: [
+                FutureBuilder<Surplus>(
+                    future: announcementViewModel
+                        .getSurplusById(widget.announcement.surplusId),
+                    builder: (context, snapshot) {
+                      return Column(
+                        children: [
+                          Row(
+                            children: [
+                              Text(snapshot.data!.name),
+                              TextButton.icon(
+                                  onPressed: () {},
+                                  icon: Icon(Icons.people),
+                                  label: Text(widget.announcement.dealing))
+                            ],
+                          ),
+                          Text("480  km de distancia"),
+                          SizedBox(height: 20),
+                          Text(snapshot.data!.units),
+                        ],
+                      );
+                    }),
+              ]),
+              Column(
+                children: [
+                  FutureBuilder<Surplus>(
+                      future: announcementViewModel
+                          .getSurplusById(widget.announcement.surplusId),
+                      builder: (context, snapshot) {
+                        return Text(snapshot.data!.name);
+                      })
+                ],
+              ),
+// Column with distance and product quantity tex
+              // ... (rest of the card content)
             ],
           ),
         ),

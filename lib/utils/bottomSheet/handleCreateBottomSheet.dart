@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:regenera/viewmodel/AnnouncementViewModel.dart';
+import 'package:regenera/viewmodel/SurplusViewModel.dart';
 
+import '../../viewmodel/ArticleViewModel.dart';
 import 'createAnnouncement.dart';
 import 'createArticle.dart';
 import 'createSurplus.dart';
 
 class Handle {
-  void handleCreateSurplus(BuildContext context) {
+  void handleCreateSurplus(BuildContext context,SurplusViewModel surplusViewModel,ArticleViewModel articleViewModel ,AnnouncementViewModel announcementViewModel) {
     showModalBottomSheet(
         context: context,
         builder: (context) => Container(
+
             height: MediaQuery.of(context).size.height * 0.4,
             child: BottomSheet(
               backgroundColor: Colors.white,
@@ -23,7 +27,7 @@ class Handle {
                             child: GestureDetector(
                                 onTap: () {
                                   Navigator.pop(context);
-                                  whichSurplusBottomSheet(context);
+                                  SurplusSheet().whichSurplusBottomSheet(context, surplusViewModel);
                                 },
                                 child: SizedBox(
                                   height: 100.0,
@@ -56,7 +60,7 @@ class Handle {
                             Expanded(
                               child: GestureDetector(
                                   onTap: () {
-                                    whichAnnouncementBottomSheet(context);
+                                    AnnouncementSheet().whichAnnouncementBottomSheet(context, announcementViewModel);
                                   },
                                   child: SizedBox(
                                     height: 100.0,
