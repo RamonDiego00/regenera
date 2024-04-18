@@ -45,7 +45,7 @@ class AuthenticationService {
     try {
       final collectionReference = cloud.collection("users");
       final querySnapshot = await collectionReference
-          .where('userId', isEqualTo: userId)
+          .where('id', isEqualTo: userId)
           .get();
 
       if (querySnapshot.docs.isEmpty) {

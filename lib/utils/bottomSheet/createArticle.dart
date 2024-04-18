@@ -182,6 +182,7 @@ class ArticlesSheet extends ChangeNotifier {
                                             BorderRadius.circular(40.0),
                                           ),
                                           child: TextField(
+                                            style: TextStyle(color: Colors.black),
                                             controller:_titleController ,
                                             cursorColor: Colors.black,
                                             decoration: InputDecoration(

@@ -12,6 +12,8 @@ class AnnouncementRepository extends ChangeNotifier {
   late FirebaseFirestore cloud;
   final authenticationService = AuthenticationService();
   late String user_id;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
 
   AnnouncementRepository() {
     _initRepository();
@@ -45,6 +47,33 @@ class AnnouncementRepository extends ChangeNotifier {
     } catch (e) {
       print('Erro ao recuperar anuncios: $e');
       return [];
+    }
+  }
+
+  Future<List<Announcement>> searchAnnouncements(String query) async {
+    try {
+      // Verifique se a consulta está vazia
+      if (query.isEmpty) {
+        // Se estiver vazia, retorne todos os anúncios
+        return getAllAnnouncements();
+      } else {
+        // Caso contrário, realize a consulta ao Firestore para buscar anúncios com base na consulta
+        final QuerySnapshot querySnapshot = await _firestore
+            .collection('Anuncio')
+            .where('negotiated', isGreaterThanOrEqualTo: query)
+            .get();
+
+        // Converta os documentos retornados em objetos Announcement
+        final List<Announcement> announcements = querySnapshot.docs
+            .map((doc) => Announcement.fromMap(doc.data() as Map<String, dynamic>))
+            .toList();
+
+        return announcements;
+      }
+    } catch (e) {
+      // Em caso de erro, você pode lidar com isso aqui
+      print('Erro ao buscar anúncios: $e');
+      throw e;
     }
   }
 

@@ -64,6 +64,7 @@ class SurplusSheet extends ChangeNotifier {
                                       borderRadius: BorderRadius.circular(40.0),
                                     ),
                                     child: TextField(
+                                      style: TextStyle(color: Colors.black),
                                       controller: _locationController,
                                       cursorColor: Colors.black,
                                       decoration: InputDecoration(
@@ -139,37 +140,37 @@ class SurplusSheet extends ChangeNotifier {
         context: context,
         isScrollControlled: true,
         builder: (context) => FractionallySizedBox(
-              heightFactor: 0.8,
-              child: Container(
-                child: BottomSheet(
-                  backgroundColor: Colors.white,
-                  builder: (context) => Column(
-                    children: [
-                      Expanded(
-                          child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 16.0, vertical: 20.0),
-                              // Ajuste os valores de padding como necessário
-                              child: Column(
-                                children: [
-                                  SizedBox(
-                                      child: Align(
-                                          alignment: Alignment.topCenter,
-                                          child: Text(
-                                              'Qual categoria se enquadra o seu exedente?',
-                                              style: TextStyle(
-                                                  fontSize: 30,
-                                                  fontWeight: FontWeight.w500,
-                                                  color: Colors.black))),
-                                      height: 120,
-                                      width: 250),
-                                  Expanded(
-                                    child: FutureBuilder<List<Surplus>>(
-                                      future:
-                                          surplusViewModel.getOptionsSurplus(),
-                                      // Recupera todas os tipos
-                                      builder: (context, snapshot) {
-                                        print(snapshot.data?.length);
+          heightFactor: 0.8,
+          child: Container(
+            child: BottomSheet(
+              backgroundColor: Colors.white,
+              builder: (context) => Column(
+                children: [
+                  Expanded(
+                      child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16.0, vertical: 20.0),
+                          // Ajuste os valores de padding como necessário
+                          child: Column(
+                            children: [
+                              SizedBox(
+                                  child: Align(
+                                      alignment: Alignment.topCenter,
+                                      child: Text(
+                                          'Qual categoria se enquadra o seu excedente?',
+                                          style: TextStyle(
+                                              fontSize: 30,
+                                              fontWeight: FontWeight.w500,
+                                              color: Colors.black))),
+                                  height: 120,
+                                  width: 250),
+                              Expanded(
+                                child: FutureBuilder<List<Surplus>>(
+                                  future:
+                                  surplusViewModel.getOptionsSurplus(),
+                                  // Recupera todas os tipos
+                                  builder: (context, snapshot) {
+                                    print(snapshot.data?.length);
 
                                         if (snapshot.connectionState ==
                                             ConnectionState.waiting) {
@@ -234,24 +235,25 @@ class SurplusSheet extends ChangeNotifier {
                                 locationSurplusBottomSheet(
                                     context, surplusViewModel);
 
-                                // fazer tratamento de clique
-                                _category = "Comida";
-                              },
-                              child: Text(
-                                'Avançar',
-                                style: TextStyle(fontWeight: FontWeight.w500),
-                              ),
-                            ),
-                          ],
+                            // fazer tratamento de clique
+                            _category = "Comida";
+                          },
+                          child: Text(
+                            'Avançar',
+                            style: TextStyle(fontWeight: FontWeight.w500),
+                          ),
                         ),
-                      )
-                    ],
-                  ),
-                  onClosing: () {},
-                ),
+                      ],
+                    ),
+                  )
+                ],
               ),
-            ));
+              onClosing: () {},
+            ),
+          ),
+        ));
   }
+
 
   infoSurplusBottomSheet(
       BuildContext context, SurplusViewModel surplusViewModel) {
@@ -312,6 +314,7 @@ class SurplusSheet extends ChangeNotifier {
                                                 BorderRadius.circular(40.0),
                                           ),
                                           child: TextField(
+                                            style: TextStyle(color: Colors.black),
                                             controller:_nameController ,
                                             cursorColor: Colors.black,
                                             decoration: InputDecoration(
@@ -351,6 +354,7 @@ class SurplusSheet extends ChangeNotifier {
                                                 BorderRadius.circular(40.0),
                                           ),
                                           child: TextField(
+                                            style: TextStyle(color: Colors.black),
                                             controller: _descriptionController,
                                             cursorColor: Colors.black,
                                             decoration: InputDecoration(
@@ -389,6 +393,7 @@ class SurplusSheet extends ChangeNotifier {
                                                 BorderRadius.circular(40.0),
                                           ),
                                           child: TextField(
+                                            style: TextStyle(color: Colors.black),
                                             controller: _unitsController,
                                             keyboardType: TextInputType.number,
                                             cursorColor: Colors.black,

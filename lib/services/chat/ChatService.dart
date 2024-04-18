@@ -9,30 +9,34 @@ class ChatService extends ChangeNotifier {
 
   //Send message
   Future<void> sendMessage(String receiverId, String message) async {
-    // get user info
     final String currentUserId = _firebaseAuth.currentUser!.uid;
     final String currentUserEmail = _firebaseAuth.currentUser!.email.toString();
     final Timestamp timestamp = Timestamp.now();
 
-    //create new message
     Message newMessage = Message(
-        senderId: currentUserId,
-        senderEmail: currentUserEmail,
-        receiverId: receiverId,
-        message: message,
-        timestamp: timestamp);
+      senderId: currentUserId,
+      senderEmail: currentUserEmail,
+      receiverId: receiverId,
+      message: message,
+      timestamp: timestamp,
+    );
 
-    //send Messages
     List<String> ids = [currentUserId, receiverId];
     ids.sort();
     String chatRoomId = ids.join("_");
 
-    await _firebaseFirestore
-        .collection('chat_rooms')
-        .doc(chatRoomId)
-        .collection('messages')
-        .add(newMessage.toMap());
+    try {
+      await _firebaseFirestore
+          .collection('chat_rooms')
+          .doc(chatRoomId)
+          .collection('messages')
+          .add(newMessage.toMap());
+    } catch (e) {
+      print("Erro ao enviar mensagem: $e");
+      // Lide com o erro de envio de mensagem aqui
+    }
   }
+
 
   // get messages
   Stream<QuerySnapshot> getMessages(String userId, String otherUserId) {
@@ -40,10 +44,20 @@ class ChatService extends ChangeNotifier {
     ids.sort();
     String chatRoomId = ids.join("_");
 
-    return _firebaseFirestore.collection('chat_rooms').doc(chatRoomId)
-        .collection('messages').orderBy('timestamp', descending: false)
-        .snapshots();
+    try {
+      return _firebaseFirestore
+          .collection('chat_rooms')
+          .doc(chatRoomId)
+          .collection('messages')
+          .orderBy('timestamp', descending: false)
+          .snapshots();
+    } catch (e) {
+      print("Erro ao receber mensagens: $e");
+      // Lide com o erro de recebimento de mensagens aqui
+      return Stream.empty(); // Retorna um stream vazio em caso de erro
+    }
   }
+
 
 
 }

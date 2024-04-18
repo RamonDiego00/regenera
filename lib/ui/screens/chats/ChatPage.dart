@@ -34,7 +34,7 @@ class _ChatPageState extends State<ChatPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(widget.receiverUserEmail?.toString() ?? '')),
+      appBar: AppBar(title: Text(widget.receiverUserEmail?.toString() ?? 'Vazio')),
       body: Column(
         children: [
           Expanded(
@@ -49,32 +49,39 @@ class _ChatPageState extends State<ChatPage> {
 
   Widget _buildMessageList() {
     return StreamBuilder(
-        stream: _chatService.getMessages(
-            widget.receiverUserID, _firebaseAuth.currentUser!.uid),
-        builder: (context, snapshot) {
-          if (snapshot.hasError) {
-            return Text('Erro${snapshot.error}');
-          }
+      stream: _chatService.getMessages(
+        _firebaseAuth.currentUser!.uid,
+        widget.receiverUserID,
+      ),
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return Text('Erro: ${snapshot.error}');
+        }
 
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Text('Loading..');
-          }
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
 
-          return ListView(
-            children: snapshot.data!.docs
-                .map((document) => _buildMessageItem(document))
-                .toList(),
-          );
-        });
+        QuerySnapshot querySnapshot = snapshot.data as QuerySnapshot;
+
+        return ListView.builder(
+          itemCount: querySnapshot.size,
+          itemBuilder: (context, index) {
+            DocumentSnapshot documentSnapshot = querySnapshot.docs[index];
+
+            // Passa o DocumentSnapshot para _buildMessageItem
+            return _buildMessageItem(documentSnapshot);
+          },
+        );
+      },
+    );
   }
 
-  Widget _buildMessageItem(DocumentSnapshot document) {
-    Map<String, dynamic>? data = document.data() as Map<String, dynamic>?;
+  Widget _buildMessageItem(DocumentSnapshot documentSnapshot) {
+    // Extrai os dados do DocumentSnapshot
+    Map<String, dynamic> data = documentSnapshot.data() as Map<String, dynamic>;
 
-    if (data == null) {
-      return SizedBox(); // Retorna um widget vazio se os dados forem nulos
-    }
-
+    // Implementação do restante do widget
     var alignment = (data['senderId'] == _firebaseAuth.currentUser!.uid)
         ? Alignment.centerRight
         : Alignment.centerLeft;
@@ -86,8 +93,7 @@ class _ChatPageState extends State<ChatPage> {
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
-          crossAxisAlignment:
-          (data['senderId'] == _firebaseAuth.currentUser!.uid)
+          crossAxisAlignment: (data['senderId'] == _firebaseAuth.currentUser!.uid)
               ? CrossAxisAlignment.end
               : CrossAxisAlignment.start,
           mainAxisAlignment:
@@ -103,6 +109,22 @@ class _ChatPageState extends State<ChatPage> {
       ),
     );
   }
+
+
+  Stream<QuerySnapshot> getMessages(String userId, String otherUserId) {
+    List<String> ids = [userId, otherUserId];
+    ids.sort();
+    String chatRoomId = ids.join("_");
+
+    return FirebaseFirestore.instance
+        .collection('chat_rooms')
+        .doc(chatRoomId)
+        .collection('messages')
+        .orderBy('timestamp', descending: false)
+        .snapshots();
+  }
+
+
 
 
   Widget _buildMessageInput() {

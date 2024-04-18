@@ -43,6 +43,18 @@ class AnnouncementViewModel extends ChangeNotifier {
     // await _announcementRepository.deleteAnnouncement(note);
   }
 
+  Future<List<Announcement>> searchAnnouncements(String query) async {
+    try {
+      // Use o repositório para buscar anúncios com base na consulta
+      final announcements = await _announcementRepository.searchAnnouncements(query);
+      return announcements;
+    } catch (e) {
+      // Em caso de erro, você pode lidar com isso aqui
+      print('Erro ao buscar anúncios: $e');
+      throw e;
+    }
+  }
+
   Future<List<Announcement>> getAllAnnouncements() async {
     _announcementRepository.initialize();
     _announcement = await _announcementRepository.getAllAnnouncements();

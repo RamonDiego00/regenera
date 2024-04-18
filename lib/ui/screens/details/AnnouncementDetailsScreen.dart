@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:regenera/model/Announcement.dart';
 import 'package:regenera/ui/screens/chats/ChatPage.dart';
 
-
 import '../../../model/Surplus.dart';
 import '../../../model/User.dart' as User1;
 import '../../../services/authenticationService.dart';
@@ -28,38 +27,36 @@ class AnnouncementDetailScreen extends StatefulWidget {
 
 class _AnnouncementDetailScreenState extends State<AnnouncementDetailScreen> {
   late Surplus? _surplus;
-  late User1.User? _user;
+  late User1.User _user;
   List<String> imageUrls = [];
 
-  // late SurplusRepository surplusRepository;
-  // late SurplusViewModel surplusViewModel;
-
-
-
   Future<void> _loadSurplus() async {
-    _surplus = await widget.surplus;
-    setState(() {});
+    Surplus? surplus = await widget.surplus;
+    _surplus = surplus;
+    setState(() {
+      _surplus = surplus;
+      _getUserSurplus(surplus.userId);
+    });
   }
-   Future<void> _getUserSurplus() async {
-    _user = await  AuthenticationService().getUserById(_surplus?.userId);
 
+  Future<void> _getUserSurplus(String userId) async {
+    User1.User? user = await AuthenticationService().getUserById(userId);
+    setState(() {
+      if (user != null) {
+        _user = user;
+      }
+    });
   }
-
-
 
   Future<void> _loadRandomImages() async {
-    // Recupera as referências de todas as imagens no seu armazenamento do Firebase
     final ListResult result =
-        await FirebaseStorage.instance.ref('imagens/').listAll();
+    await FirebaseStorage.instance.ref('imagens/').listAll();
 
-    // Extrai as URLs de todas as imagens
     final List<String> urls = [];
     await Future.forEach(result.items, (Reference ref) async {
       final url = await ref.getDownloadURL();
       urls.add(url);
     });
-
-    urls.shuffle();
 
     setState(() {
       imageUrls = urls;
@@ -69,17 +66,13 @@ class _AnnouncementDetailScreenState extends State<AnnouncementDetailScreen> {
   @override
   void initState() {
     super.initState();
-    _getUserSurplus();
+    _user = User1.User(id: '', name: '', email: '', garden: '', location: '', dimension: '', age: '', plantations: '', password: ''); // Initialize user object
     _loadSurplus();
     _loadRandomImages();
-    // surplusRepository = SurplusRepository();
-    // surplusViewModel = SurplusViewModel(surplusRepository);
   }
 
   @override
   Widget build(BuildContext context) {
-    // tirar o susplus do future e capturar a insatncia aqui
-
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -92,43 +85,44 @@ class _AnnouncementDetailScreenState extends State<AnnouncementDetailScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Imagem do Produto
             Container(
-                height: MediaQuery.of(context).size.height / 3,
-                color: Colors.grey, // Cor de fundo temporária
-                child: Stack(
-                  alignment: Alignment.topRight,
-                  children: [
-                    CarouselSlider.builder(
-                      itemCount: imageUrls.length, //length image,
-                      itemBuilder: (context, index, carouselController) {
-                        final imageURL = imageUrls[index];
-                        return Image.network(
-                          imageURL,
-                          fit: BoxFit.cover,
-                          width: double.infinity,
-                          height: 400,
-                        );
-                      },
-                      options: CarouselOptions(
-                        viewportFraction: 0.8,
-                        // Adjust carousel viewport size
-                        initialPage: 0,
-                        enableInfiniteScroll: true,
-                        autoPlay: true,
-                        autoPlayInterval: Duration(seconds: 5),
-                        autoPlayCurve: Curves.fastOutSlowIn,
-                        pauseAutoPlayOnTouch: false,
-                      ),
+              height: MediaQuery.of(context).size.height / 3,
+              color: Colors.grey,
+              child: Stack(
+                alignment: Alignment.topRight,
+                children: [
+                  CarouselSlider.builder(
+                    itemCount: imageUrls.length,
+                    itemBuilder: (context, index, carouselController) {
+                      if (index >= imageUrls.length) {
+                        return Container(); // Return an empty container if index is invalid
+                      }
+                      final imageURL = imageUrls[index];
+                      return Image.network(
+                        imageURL,
+                        fit: BoxFit.cover,
+                        width: double.infinity,
+                        height: 400,
+                      );
+                    },
+                    options: CarouselOptions(
+                      viewportFraction: 0.8,
+                      initialPage: 0,
+                      enableInfiniteScroll: true,
+                      autoPlay: true,
+                      autoPlayInterval: Duration(seconds: 5),
+                      autoPlayCurve: Curves.fastOutSlowIn,
+                      pauseAutoPlayOnTouch: false,
                     ),
-                    GestureDetector(
-                      onTap: () {
-                        // Handle heart icon tap (e.g., toggle favorite status)
-                      },
-                    ),
-                  ],
-                )),
-            // Título do Item
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      // Handle heart icon tap (e.g., toggle favorite status)
+                    },
+                  ),
+                ],
+              ),
+            ),
             Padding(
               padding: const EdgeInsets.all(10.0),
               child: Text(
@@ -140,7 +134,6 @@ class _AnnouncementDetailScreenState extends State<AnnouncementDetailScreen> {
                     color: Colors.black),
               ),
             ),
-            // Localização
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Text(
@@ -152,14 +145,13 @@ class _AnnouncementDetailScreenState extends State<AnnouncementDetailScreen> {
                     color: Colors.black),
               ),
             ),
-            // Nome de quem criou
             Padding(
               padding: EdgeInsets.all(8.0),
               child: Column(
                 children: [
                   Divider(),
                   Text(
-                    "Criado por: ${FirebaseAuth.instance.currentUser?.email.toString()}",
+                    "Criado por: ${_user.email}",
                     textAlign: TextAlign.left,
                     style: TextStyle(fontSize: 16, color: Colors.black),
                   ),
@@ -167,7 +159,6 @@ class _AnnouncementDetailScreenState extends State<AnnouncementDetailScreen> {
                 ],
               ),
             ),
-            // Descrição do Produto
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Text(
@@ -191,7 +182,6 @@ class _AnnouncementDetailScreenState extends State<AnnouncementDetailScreen> {
                 style: TextStyle(fontSize: 16, color: Colors.black),
               ),
             ),
-            // Botão "Trocar"
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: ElevatedButton(
@@ -200,7 +190,7 @@ class _AnnouncementDetailScreenState extends State<AnnouncementDetailScreen> {
                       context,
                       MaterialPageRoute(
                           builder: (context) => ChatPage(
-                              receiverUserEmail: _user?.email.toString(),
+                              receiverUserEmail: _user.email.toString(),
                               receiverUserID: _surplus!.userId)));
                 },
                 style: ElevatedButton.styleFrom(
