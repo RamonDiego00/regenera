@@ -96,7 +96,7 @@ class Handle {
                             Expanded(
                               child: GestureDetector(
                                   onTap: () {
-                                    createArticleBottomSheet(context);
+                                    ArticlesSheet().whichArticleBottomSheet(context, articleViewModel);
                                   },
                                   child: SizedBox(
                                     height: 100.0,

@@ -23,6 +23,7 @@ class UserViewModel extends ChangeNotifier {
 
   Future<void> registerUser(BuildContext context,User user) async {
     // await _userRepository.initialize();
+    print("salvando user");
     await _userRepository.createUser(context,user);
   }
 

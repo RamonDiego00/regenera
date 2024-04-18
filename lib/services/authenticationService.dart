@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart' hide User;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -38,9 +39,35 @@ class AuthenticationService {
       return null;
     }
   }
+  Future<User?> getUserById(String? userId) async {
+    final cloud = FirebaseFirestore.instance;
+
+    try {
+      final collectionReference = cloud.collection("users");
+      final querySnapshot = await collectionReference
+          .where('userId', isEqualTo: userId)
+          .get();
+
+      if (querySnapshot.docs.isEmpty) {
+        return null; // Usuário não encontrado
+      }
+
+      final userData = querySnapshot.docs.first.data();
+      final user = User.fromMap(userData);
+      return user;
+
+    } catch (e) {
+      print('Erro ao recuperar usuário: $e');
+      return null;
+    }
+  }
+
 
   Future<UserCredential?> signInWithGoogle(BuildContext context) async {
     try {
+
+      _initializeUserViewModel();
+
       final GoogleSignInAccount? gUser = await GoogleSignIn().signIn();
       if (gUser == null) {
         return null;

@@ -35,14 +35,36 @@ class AnnouncementRepository extends ChangeNotifier {
 
       final announcements = <Announcement>[];
       for (final documentSnapshot in querySnapshot.docs) {
-        final Map<String, dynamic> data = documentSnapshot.data() as Map<String, dynamic>;
+        final Map<String, dynamic> data =
+            documentSnapshot.data() as Map<String, dynamic>;
         final announcement = Announcement.fromMap(data);
         announcements.add(announcement);
       }
 
       return announcements;
     } catch (e) {
-      print('Erro ao recuperar notas: $e');
+      print('Erro ao recuperar anuncios: $e');
+      return [];
+    }
+  }
+
+  Future<List<Announcement>> getAllFavoriteAnnouncements() async {
+    try {
+      final collectionReference = cloud.collection("Anuncio");
+      final querySnapshot =
+          await collectionReference.where('userId', isEqualTo: user_id).get();
+
+      final announcements = <Announcement>[];
+      for (final documentSnapshot in querySnapshot.docs) {
+        final Map<String, dynamic> data =
+            documentSnapshot.data() as Map<String, dynamic>;
+        final announcement = Announcement.fromMap(data);
+        announcements.add(announcement);
+      }
+
+      return announcements;
+    } catch (e) {
+      print('Erro ao recuperar anuncios: $e');
       return [];
     }
   }
@@ -52,12 +74,12 @@ class AnnouncementRepository extends ChangeNotifier {
       final collectionReference = cloud.collection("Exedente");
       final querySnapshot = await collectionReference
           .where('category', isEqualTo: category)
-          .where('createdBy', isEqualTo: user_id)
+          .where('userId', isEqualTo: user_id)
           .get();
 
       final announcements = <Surplus>[];
       for (final documentSnapshot in querySnapshot.docs) {
-        final Map<String, dynamic> data = documentSnapshot.data() as Map<String, dynamic>;
+        final Map<String, dynamic> data = documentSnapshot.data();
         final surplus = Surplus.fromMap(data);
         announcements.add(surplus);
       }
@@ -66,6 +88,54 @@ class AnnouncementRepository extends ChangeNotifier {
     } catch (e) {
       print('Erro ao recuperar exedentes: $e');
       return [];
+    }
+  }
+
+  Future<Surplus> getSurplusById(String id) async {
+    try {
+      final collectionReference = cloud.collection("Exedente");
+      final querySnapshot =
+          await collectionReference.where('id', isEqualTo: id).get();
+
+      // final announcements = Surplus;
+      // for (final documentSnapshot in querySnapshot.docs) {
+      //   final Map<String, dynamic> data = documentSnapshot.data();
+      //   final surplus = Surplus.fromMap(data);
+      //   announcements.add(surplus);
+      // }
+
+      if (querySnapshot.docs.isNotEmpty) {
+        final Map<String, dynamic> data = querySnapshot.docs.first.data()!;
+        final surplus = Surplus.fromMap(data);
+        return surplus;
+      } else {
+        return Surplus(
+          id: "3",
+          userId: "user2",
+          location: "location",
+          name: "Serviço",
+          description:
+              "Qualquer tipo de serviço que ajude o plantio ou manutenção dos jardins",
+          photos: ["image3.jpg"],
+          category: "Ferramenta",
+          units: "kg",
+          date: DateTime.now().toString(),
+        );
+      }
+    } catch (e) {
+      print('Erro ao recuperar exedentes: $e');
+      return Surplus(
+        id: "3",
+        userId: "user2",
+        location: "location",
+        name: "Serviço",
+        description:
+            "Qualquer tipo de serviço que ajude o plantio ou manutenção dos jardins",
+        photos: ["image3.jpg"],
+        category: "Ferramenta",
+        units: "kg",
+        date: DateTime.now().toString(),
+      );
     }
   }
 
@@ -99,14 +169,14 @@ class AnnouncementRepository extends ChangeNotifier {
     final documentSnapshot = await documentReference.get();
 
     if (documentSnapshot.exists) {
-      final Map<String, dynamic> data = documentSnapshot.data() as Map<String, dynamic>;
+      final Map<String, dynamic> data =
+          documentSnapshot.data() as Map<String, dynamic>;
       final announcement = Announcement.fromMap(data);
       return announcement;
     } else {
       return null; // Handle the case where the document doesn't exist
     }
   }
-
 
   Future<void> deleteAllNotes() async {
     try {

@@ -1,13 +1,4 @@
-// id
-// nome de usuario
-// foto
-// email
-// nome do jardim
-// localização
-// data de criação da conta
-// dimensão da plantação em m2
-// idade
-// Quantidade de plantações do usuario
+
 
 class User {
   final String id;

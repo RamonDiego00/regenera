@@ -29,7 +29,7 @@ class Surplus {
         userId: map['userId'],
         category: map['category'],
         date: map['date'],
-        photos: map['photos'],
+        photos: (map['photos']  as List<dynamic>).map((photo) => photo.toString()).toList(),
         units: map['units']
     );
   }

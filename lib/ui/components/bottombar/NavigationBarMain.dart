@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:regenera/core/repository/ArticleRepository.dart';
 import 'package:regenera/core/repository/SurplusRepository.dart';
 import 'package:regenera/core/repository/UserRepository.dart';
 import 'package:regenera/ui/screens/main/ArticlesScreen.dart';
@@ -26,7 +27,7 @@ class _NavigationBarMainState extends State<NavigationBarMain> {
   late SurplusRepository surplusRepository;
   late SurplusViewModel surplusViewModel;
 
-  late UserRepository articleRepository;
+  late ArticleRepository articleRepository;
   late ArticleViewModel articleViewModel;
 
  late AnnouncementRepository announcementRepository;
@@ -38,7 +39,7 @@ class _NavigationBarMainState extends State<NavigationBarMain> {
     surplusRepository = SurplusRepository();
     surplusViewModel = SurplusViewModel(surplusRepository);
 
-    articleRepository = UserRepository();
+    articleRepository = ArticleRepository();
     articleViewModel = ArticleViewModel(articleRepository);
 
     announcementRepository = AnnouncementRepository();

@@ -49,7 +49,7 @@ class _SurplusItemState extends State<SurplusItem> {
             widget.onSurplusSelected(widget.surplus);
           },
           child: Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(4.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -59,6 +59,8 @@ class _SurplusItemState extends State<SurplusItem> {
                     Expanded(
                       child: Text(
                         widget.surplus.name,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 26,
@@ -84,7 +86,7 @@ class _SurplusItemState extends State<SurplusItem> {
                     SizedBox(width: 10.0),
                   ],
                 ),
-                SizedBox(width: 10.0),
+                SizedBox(width: 5.0),
                 Text(widget.surplus.description,
                     style: TextStyle(
                         fontWeight: FontWeight.normal,

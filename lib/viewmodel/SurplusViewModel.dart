@@ -32,6 +32,7 @@ class SurplusViewModel extends ChangeNotifier {
   List<Announcement> _notes = [];
 
   late String user_id;
+  late List<String> myphotos;
 
   List<Announcement> get notes => _notes;
   String _apiKey = "";
@@ -121,8 +122,6 @@ class SurplusViewModel extends ChangeNotifier {
       if (pickedImages != null && pickedImages.isNotEmpty) {
         for (final XFile image in pickedImages) {
           // Obter arquivo da imagem
-
-
           final file = File(image.path);
 
           // Gerar nome de arquivo único
@@ -137,8 +136,9 @@ class SurplusViewModel extends ChangeNotifier {
           // Obter a URL da imagem
           final imageUrl = await storageRef.getDownloadURL();
 
-          // Armazenar a URL na lista
+          // Armazenar a URL na lista **e** na variável _photos
           imageUrls.add(imageUrl);
+          myphotos.add(imageUrl);
         }
       }
     } catch (error) {
@@ -149,6 +149,21 @@ class SurplusViewModel extends ChangeNotifier {
   }
 
 
+  Future<String> getImageUrlFromFirebase(String imagePath) async {
+    try {
+      // Referenciar o armazenamento do Firebase
+      final storageRef = FirebaseStorage.instance.ref().child(imagePath);
+
+      // Obter a URL da imagem
+      final imageUrl = await storageRef.getDownloadURL();
+
+      return imageUrl;
+    } catch (error) {
+      print('Erro ao recuperar a imagem do Firebase Storage: $error');
+      // Em caso de erro, retorne uma string vazia ou trate o erro de outra forma adequada
+      return '';
+    }
+  }
 
 
 

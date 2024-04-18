@@ -85,8 +85,7 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                   alignment: Alignment.center,
                   child: Expanded(
                     child: FutureBuilder<List<Announcement>>(
-                      future: announcementViewModel
-                          .getAllFavoriteAnnouncements(), // Updated method
+                      future: announcementViewModel.getAllFavoriteAnnouncements(), // Updated method
                       builder: (context, snapshot) {
                         if (snapshot.connectionState ==
                             ConnectionState.waiting) {

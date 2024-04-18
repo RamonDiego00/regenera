@@ -21,39 +21,16 @@ class UserRepository extends ChangeNotifier {
   }
 
   Future<void> createUser(BuildContext context, User user) async {
-    // Salvando localmente
-    try {
-      // await db.insert('users', user.toMap());
-      notifyListeners();
-    } catch (e) {
-      print('Erro ao salvar usuario: $e');
-    }
+
     // Salvando remotamente
     try {
-
       await FirebaseFirestore.instance
           .collection('users')
           .doc(user.id)
           .set(user.toMap());
 
+      print("salvou");
 
-      // AuthenticationService()
-      //     .registerUser(
-      //         context: context,
-      //         name: user.name,
-      //         password: user.password,
-      //         email: user.email)
-      //     .then((String? error) {
-      //   if (error != null) {
-      //     showSnackBar(context: context, text: error);
-      //   } else {
-      //     // deu certo
-      //     showSnackBar(
-      //         context: context,
-      //         text: "Cadastro efetuado com sucesso",
-      //         isError: false);
-      //   }
-      // });
     } catch (e) {
       print('Erro ao salvar nota na nuvem: $e');
     }

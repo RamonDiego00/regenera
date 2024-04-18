@@ -32,15 +32,15 @@ dependencies:
   image_picker: ^0.8.5+1
   carousel_slider: ^4.2.1
 #  banco de dados
-  firebase_auth: ^4.0.0
+  firebase_auth: ^4.17.8
   firebase_core: ^2.27.0
   firebase_storage: ^11.6.9
   cloud_firestore: ^4.15.7
   flutter_dotenv: ^5.0.0
   google_sign_in: ^6.2.1
 #  localização
-#  google_maps_flutter: ^2.6.0
   geolocator: ^11.0.0
+  google_maps_flutter: ^2.5.3
 #  chat
   provider: ^6.1.2
   socket_io_client: ^2.0.3+1

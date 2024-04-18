@@ -132,7 +132,7 @@ class _LoginPageState extends State<LoginPage> {
                             String password = _passwordController.text;
                             print('Email: $email');
                             print('Password: $password');
-
+                            // salvar user no banco de dados
                             authenticationService
                                 .loginUser(password: password, email: email)
                                 .then((String? error) {
@@ -222,7 +222,6 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                           onPressed: () {
                             //Login com google
-
                             AuthenticationService().signInWithGoogle(context);
                           },
                           child: const Row(

@@ -452,8 +452,8 @@ class SurplusSheet extends ChangeNotifier {
                                                 child: GestureDetector(
                                                   onTap: () async {
                                                     final urls = await surplusViewModel.pickImages();
+                                                      _photos = urls;
 
-                                                    _photos = urls;
                                                   },
                                                   child: Icon(Icons.add_circle_outline_rounded),
                                                 ),

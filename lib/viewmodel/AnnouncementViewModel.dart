@@ -1,3 +1,4 @@
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -13,6 +14,7 @@ import '../ui/components/bottombar/NavigationBarMain.dart';
 class AnnouncementViewModel extends ChangeNotifier {
   final AnnouncementRepository _announcementRepository;
   final authenticationService = AuthenticationService();
+  bool showDescription = false;
 
   AnnouncementViewModel(this._announcementRepository) {
     _loadApiKey();
@@ -47,6 +49,7 @@ class AnnouncementViewModel extends ChangeNotifier {
     return _announcement;
     notifyListeners();
   }
+
 
   Future<List<Surplus>> getOptionsAnnouncement() async {
     // Create two fictitious Surplus objects
@@ -99,17 +102,8 @@ class AnnouncementViewModel extends ChangeNotifier {
 
   Future<Surplus> getSurplusById(String surplusId) async {
     await _announcementRepository.initialize();
-    return Surplus(
-      id: "1",
-      userId: "user1",
-      location: "location",
-      name: "Alimentício",
-      description: "Qualquer tipo de alimento ue sido plantado e colhido",
-      photos: ["image1.jpg,image2.jpg"],
-      category: "Comida",
-      units: "kg",
-      date: DateTime.now().toString(),
-    );
+    return  _announcementRepository.getSurplusById(surplusId);
+
     // await _announcementRepository.deleteAnnouncement(note);
   }
 
@@ -131,7 +125,7 @@ class AnnouncementViewModel extends ChangeNotifier {
 
   Future<List<Announcement>> getAllFavoriteAnnouncements() async {
     await _announcementRepository.initialize();
-    // _announcement = await _announcementRepository.getAllAnnouncements();
+    _announcement = await _announcementRepository.getAllFavoriteAnnouncements();
     return _announcement;
     notifyListeners();
   }

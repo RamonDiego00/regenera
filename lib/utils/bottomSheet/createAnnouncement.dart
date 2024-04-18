@@ -5,6 +5,7 @@ import 'package:regenera/viewmodel/SurplusViewModel.dart';
 import '../../model/Surplus.dart';
 import '../../ui/components/bottombar/NavigationBarMain.dart';
 import '../../ui/components/item/SurplusItem.dart';
+import '../../viewmodel/ArticleViewModel.dart';
 
 class AnnouncementSheet extends ChangeNotifier {
   String _category = 'Comida';
@@ -45,7 +46,6 @@ class AnnouncementSheet extends ChangeNotifier {
                                     child: FutureBuilder<List<Surplus>>(
                                       future: announcementViewModel
                                           .getOptionsAnnouncement(),
-                                      // Recupera todas os tipos
                                       builder: (context, snapshot) {
                                         print(snapshot.data?.length);
 
@@ -84,10 +84,7 @@ class AnnouncementSheet extends ChangeNotifier {
                                                 return SurplusItem(
                                                   surplus: surplus,
                                                   onSurplusSelected:
-                                                      (selectedSurplus) {
-                                                    _selectedSurplus =
-                                                        selectedSurplus;
-                                                  },
+                                                      (selectedSurplus) {},
                                                 );
                                               },
                                             ),
@@ -161,6 +158,7 @@ class AnnouncementSheet extends ChangeNotifier {
                                 child: Column(
                                   children: [
                                     const SizedBox(
+                                        width: 320,
                                         child: Align(
                                             alignment: Alignment.topCenter,
                                             child: Column(
@@ -173,65 +171,59 @@ class AnnouncementSheet extends ChangeNotifier {
                                                             FontWeight.w500,
                                                         color: Colors.black)),
                                               ],
-                                            )),
-                                        width: 320),
-                                    Expanded(
-                                      child: FutureBuilder<List<Surplus>>(
-                                        future: announcementViewModel
-                                            .getMyAllSurplusByCategory(
-                                                _category),
-                                        // Recupera todas os tipos
-                                        builder: (context, snapshot) {
-                                          print(snapshot.data?.length);
+                                            ))),
+                                    FutureBuilder<List<Surplus>>(
+                                      future: announcementViewModel
+                                          .getMyAllSurplusByCategory(_category),
+                                      // Recupera todas os tipos
+                                      builder: (context, snapshot) {
+                                        print(snapshot.data?.length);
 
-                                          if (snapshot.connectionState ==
-                                              ConnectionState.waiting) {
-                                            return CircularProgressIndicator();
-                                          } else if (snapshot.hasError) {
-                                            return Column(
-                                              children: [
-                                                SizedBox(
-                                                  height: 30.0,
-                                                ),
-                                                Text(
-                                                    'Erro ao carregar os excedentes')
-                                              ],
-                                            );
-                                          } else if (snapshot.hasData &&
-                                              snapshot.data!.isEmpty) {
-                                            return Column(
-                                              children: [
-                                                SizedBox(
-                                                  height: 30.0,
-                                                ),
-                                                Text(
-                                                    'Nenhum exedente encontrado')
-                                              ],
-                                            );
-                                          } else {
-                                            return Container(
-                                              child: ListView.builder(
-                                                padding: EdgeInsets.symmetric(
-                                                    vertical: 28.0),
-                                                itemCount:
-                                                    snapshot.data!.length,
-                                                itemBuilder: (context, index) {
-                                                  final surplus =
-                                                      snapshot.data![index];
-                                                  return SurplusItem(
-                                                      surplus: surplus,
-                                                      onSurplusSelected:
-                                                          (selectedSurplus) => {
-                                                                _selectedSurplus =
-                                                                    selectedSurplus
-                                                              });
-                                                },
+                                        if (snapshot.connectionState ==
+                                            ConnectionState.waiting) {
+                                          return CircularProgressIndicator();
+                                        } else if (snapshot.hasError) {
+                                          return Column(
+                                            children: [
+                                              SizedBox(
+                                                height: 30.0,
                                               ),
-                                            );
-                                          }
-                                        },
-                                      ),
-                                    )
+                                              Text(
+                                                  'Erro ao carregar os excedentes')
+                                            ],
+                                          );
+                                        } else if (snapshot.hasData &&
+                                            snapshot.data!.isEmpty) {
+                                          return Column(
+                                            children: [
+                                              SizedBox(
+                                                height: 30.0,
+                                              ),
+                                              Text('Nenhum exedente encontrado')
+                                            ],
+                                          );
+                                        } else {
+                                          return Container(
+                                            child: ListView.builder(
+                                              shrinkWrap: true,
+                                              padding: EdgeInsets.symmetric(
+                                                  vertical: 28.0),
+                                              itemCount: snapshot.data!.length,
+                                              itemBuilder: (context, index) {
+                                                final surplus =
+                                                    snapshot.data![index];
+                                                return SurplusItem(
+                                                    surplus: surplus,
+                                                    onSurplusSelected:
+                                                        (selectedSurplus) => {
+                                                              _selectedSurplus = selectedSurplus
+                                                            });
+                                              },
+                                            ),
+                                          );
+                                        }
+                                      },
+                                    ),
                                   ],
                                 )))),
                     Padding(

@@ -100,7 +100,7 @@ class MyApp extends StatelessWidget {
                   brightness: Brightness.light,
                   primary: Colors.white),
             ),
-            home: HomeScreen(),
+            home: LoginPage(),
             onGenerateRoute: router.generator,
           );
         }
