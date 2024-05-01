@@ -53,9 +53,8 @@ class _NavigationBarMainState extends State<NavigationBarMain> {
   final List<Widget> _pages = [
     const HomeScreen(),
     const FavoriteScreen(),
-    // deve ser vazio
     const HomeScreen(),
-    // esse homeScreen nã deve existir
+    // deve ser vazio
     const MessageScreen(),
     const ArticlesScreen(),
   ];

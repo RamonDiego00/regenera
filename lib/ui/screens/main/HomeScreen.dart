@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:regenera/model/Announcement.dart';
 import 'package:regenera/core/repository/AnnouncementRepository.dart';
+import 'package:regenera/ui/screens/main/PopUpUser.dart';
 import 'package:regenera/viewmodel/AnnouncementViewModel.dart';
 import 'package:regenera/ui/widgets/AnnouncementItem.dart';
 
@@ -108,7 +109,12 @@ class _HomeScreenState extends State<HomeScreen> {
                         SizedBox(width: 20),
                         GestureDetector(
                           onTap: () {
-                            // Handle tap
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return LogoutPopup();
+                              },
+                            );
                           },
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(50.0),
