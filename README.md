@@ -3,9 +3,7 @@
 
 é o meu projeto sobre plantio coletivo no mundo pós capitalista
 
-## Getting Started
-
-This project is a starting point for a Flutter application.
+## Getting Starte
 
 A few resources to get you started if this is your first Flutter project:
 
